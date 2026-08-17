@@ -23,3 +23,12 @@ Simulador de provas para a certificação **AWS Cloud Practitioner (CLF-C02)** c
 - HTML, CSS e JavaScript puros (sem dependências externas)
 - Google Gemini API para geração de questões
 - Salvamento local via localStorage (funciona offline)
+
+## Releases
+
+As releases são publicadas automaticamente via GitHub Actions com [SLSA3 provenance](https://slsa.dev/) para garantir a integridade do artefato. Para criar uma release, faça push de uma tag:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
