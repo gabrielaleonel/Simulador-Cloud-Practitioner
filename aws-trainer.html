@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWS Cloud Practitioner — Trainer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B1424;
+    --surface:#121F35;
+    --surface-2:#1A2C4A;
+    --border:#28405F;
+    --text:#EAF2FF;
+    --text-dim:#8FA7C9;
+    --orange:#FF9900;
+    --orange-dim:#C97D2B;
+    --correct:#3DDC97;
+    --incorrect:#FF6259;
+    --warning:#FFC24B;
+    --mono:'IBM Plex Mono', monospace;
+    --sans:'IBM Plex Sans', sans-serif;
+    --d-concepts:#5FB8FF;
+    --d-security:#FF9900;
+    --d-tech:#3DDC97;
+    --d-billing:#C99BFF;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse at top left, rgba(255,153,0,0.06), transparent 45%),
+      radial-gradient(ellipse at bottom right, rgba(95,184,255,0.05), transparent 50%),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    min-height:100vh;
+    padding:24px 16px 60px;
+  }
+  .wrap{max-width:680px;margin:0 auto;}
+
+  /* top bar */
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:10px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-badge{
+    width:34px;height:34px;border-radius:8px;
+    background:linear-gradient(135deg, var(--orange), var(--orange-dim));
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-weight:700;color:#0B1424;font-size:15px;
+  }
+  .brand-text{font-family:var(--mono);font-size:13px;letter-spacing:0.06em;color:var(--text-dim);text-transform:uppercase;}
+  .brand-text b{color:var(--text);}
+  .topnav{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
+  .nav-btn{
+    font-family:var(--mono);font-size:11px;padding:6px 10px;border-radius:8px;cursor:pointer;
+    background:transparent;border:1px solid var(--border);color:var(--text-dim);
+    transition:border-color .12s ease,color .12s ease;
+  }
+  .nav-btn:hover{border-color:var(--orange-dim);color:var(--text);}
+  .nav-btn.active{border-color:var(--orange);color:var(--orange);}
+  .day-pill{
+    font-family:var(--mono);font-size:12px;color:var(--orange);
+    border:1px solid var(--orange-dim);border-radius:20px;padding:5px 12px;
+    background:rgba(255,153,0,0.08);
+  }
+
+  /* readiness gauge */
+  .gauge-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    padding:18px 20px;margin-bottom:18px;
+  }
+  .gauge-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
+  .gauge-label{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);}
+  .gauge-score{font-family:var(--mono);font-size:22px;font-weight:700;}
+  .gauge-track{position:relative;height:10px;border-radius:6px;background:var(--surface-2);overflow:visible;}
+  .gauge-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#FF6259,#FFC24B,#3DDC97);transition:width .5s ease;}
+  .gauge-threshold{
+    position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--text);
+    left:70%;opacity:0.6;
+  }
+  .gauge-threshold::after{
+    content:'700 aprovação';position:absolute;top:14px;left:50%;transform:translateX(-50%);
+    font-family:var(--mono);font-size:9px;color:var(--text-dim);white-space:nowrap;
+  }
+
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    padding:24px;margin-bottom:16px;
+  }
+
+  /* dashboard */
+  .h1{font-family:var(--mono);font-size:20px;font-weight:600;margin:0 0 6px;}
+  .sub{color:var(--text-dim);font-size:14px;line-height:1.5;margin:0 0 18px;}
+  .domain-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+  @media(max-width:480px){.domain-grid{grid-template-columns:1fr;}}
+  .domain-box{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+  .domain-box .dn{font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;margin-bottom:6px;}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+  .domain-box .dv{font-family:var(--mono);font-size:18px;font-weight:600;}
+  .bar-bg{height:5px;border-radius:4px;background:#0B1424;margin-top:6px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:4px;}
+
+  .tags-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+  .tag-topic{
+    font-family:var(--mono);font-size:11px;padding:6px 10px;border-radius:20px;
+    border:1px solid var(--border);color:var(--text-dim);
+  }
+  .tag-topic.weak{border-color:var(--incorrect);color:var(--incorrect);}
+  .tag-topic.strong{border-color:var(--correct);color:var(--correct);}
+
+  .btn{
+    font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:0.02em;
+    border:none;border-radius:10px;padding:14px 20px;cursor:pointer;
+    width:100%;transition:transform .12s ease, opacity .12s ease;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn-primary{background:var(--orange);color:#0B1424;}
+  .btn-primary:hover{opacity:0.92;}
+  .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text);}
+  .btn-ghost:hover{border-color:var(--orange-dim);}
+  .btn-row{display:flex;gap:10px;margin-top:14px;}
+  .btn-row .btn{flex:1;}
+  .btn-row a.btn{text-decoration:none;display:block;text-align:center;}
+
+  /* forms */
+  .f-label{display:block;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-dim);margin:12px 0 6px;}
+  .f-input{
+    width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;
+    color:var(--text);font-family:var(--sans);font-size:14px;padding:10px 12px;outline:none;
+  }
+  .f-input:focus{border-color:var(--orange-dim);}
+  .f-input::placeholder{color:var(--text-dim);opacity:0.6;}
+  select.f-input{color-scheme:dark;}
+  select.f-input option{background:var(--surface-2);}
+  .f-area{resize:vertical;min-height:80px;line-height:1.5;}
+  .f-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  @media(max-width:480px){.f-grid{grid-template-columns:1fr;}}
+  .f-small{font-size:12px;padding:7px 10px;margin-top:6px;}
+  .opt-row{display:grid;grid-template-columns:34px 1fr;gap:8px;margin-bottom:8px;align-items:start;}
+  .chk{display:flex;align-items:center;justify-content:center;height:36px;border:1px solid var(--border);border-radius:8px;font-family:var(--mono);font-weight:700;cursor:pointer;color:var(--text-dim);}
+  .chk input{position:absolute;opacity:0;pointer-events:none;}
+  .chk.on{border-color:var(--correct);color:var(--correct);background:rgba(61,220,151,0.08);}
+  .opt-fields{display:flex;flex-direction:column;}
+
+  .mini-btn{
+    font-family:var(--mono);font-size:11px;padding:5px 10px;border-radius:6px;cursor:pointer;
+    background:var(--surface-2);border:1px solid var(--border);color:var(--text);
+  }
+  .mini-btn:hover{border-color:var(--orange-dim);}
+  .mini-btn.danger:hover{border-color:var(--incorrect);color:var(--incorrect);}
+
+  .p-question{border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:var(--surface-2);}
+  .p-q-top{display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap;}
+  .p-q-top>div{flex:1;}
+  .p-q{font-size:14px;font-weight:500;margin:0 0 8px;}
+  .p-opt{font-size:12.5px;color:var(--text-dim);padding:4px 10px;border-left:2px solid var(--border);margin-bottom:4px;}
+  .p-opt b{font-family:var(--mono);margin-right:6px;}
+  .p-opt.ok{color:var(--text);border-left-color:var(--correct);}
+  .p-opt.ok b{color:var(--correct);}
+  .p-concept{font-size:12.5px;margin-top:8px;color:var(--text-dim);}
+
+  .lesson-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+  .lesson-row:last-child{border-bottom:none;}
+  .dim{color:var(--text-dim);font-size:12px;}
+
+  .warn{background:rgba(255,194,75,0.1);border:1px solid var(--warning);color:var(--warning);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.5;margin-top:12px;}
+  .ok-msg{background:rgba(61,220,151,0.1);border:1px solid var(--correct);color:var(--correct);border-radius:10px;padding:12px 14px;font-size:13px;margin-top:12px;}
+
+  /* question screen */
+  .q-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px;flex-wrap:wrap;}
+  .q-progress{font-family:var(--mono);font-size:12px;color:var(--text-dim);}
+  .q-tags{display:flex;gap:8px;}
+  .badge{
+    font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.05em;
+    padding:4px 8px;border-radius:6px;border:1px solid var(--border);
+  }
+  .diff-easy{color:var(--correct);border-color:var(--correct);}
+  .diff-medium{color:var(--warning);border-color:var(--warning);}
+  .diff-hard{color:var(--incorrect);border-color:var(--incorrect);}
+
+  .q-text{font-size:17px;line-height:1.5;margin:6px 0 20px;font-weight:500;}
+  .q-hint{font-family:var(--mono);font-size:11px;color:var(--text-dim);margin:-14px 0 14px;}
+
+  .option{
+    display:flex;align-items:flex-start;gap:12px;
+    background:var(--surface-2);border:1.5px solid var(--border);border-radius:10px;
+    padding:13px 14px;margin-bottom:10px;cursor:pointer;transition:border-color .15s ease, background .15s ease;
+  }
+  .option:hover{border-color:var(--orange-dim);}
+  .option.selected{border-color:var(--orange);background:rgba(255,153,0,0.08);}
+  .option-key{
+    font-family:var(--mono);font-weight:700;font-size:13px;
+    width:22px;height:22px;border-radius:6px;background:var(--bg);border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .option.selected .option-key{border-color:var(--orange);color:var(--orange);}
+  .option-text{font-size:14.5px;line-height:1.4;padding-top:1px;}
+
+  .option.correct{border-color:var(--correct);background:rgba(61,220,151,0.09);}
+  .option.correct .option-key{border-color:var(--correct);color:var(--correct);}
+  .option.incorrect{border-color:var(--incorrect);background:rgba(255,98,89,0.09);}
+  .option.incorrect .option-key{border-color:var(--incorrect);color:var(--incorrect);}
+  .option.disabled{cursor:default;}
+
+  /* feedback */
+  .result-banner{
+    display:flex;align-items:center;gap:10px;
+    font-family:var(--mono);font-weight:700;font-size:15px;
+    padding:12px 14px;border-radius:10px;margin-bottom:16px;
+  }
+  .result-banner.ok{background:rgba(61,220,151,0.12);color:var(--correct);}
+  .result-banner.no{background:rgba(255,98,89,0.12);color:var(--incorrect);}
+
+  .exp-block{margin-bottom:8px;}
+  .exp-opt{
+    font-size:13.5px;line-height:1.5;color:var(--text-dim);
+    padding:10px 12px;border-left:2px solid var(--border);margin-bottom:6px;
+  }
+  .exp-opt b{color:var(--text);font-family:var(--mono);font-size:12px;}
+  .exp-opt.is-correct{border-left-color:var(--correct);}
+  .exp-opt.is-correct b{color:var(--correct);}
+
+  .concept-box{
+    background:var(--surface-2);border:1px solid var(--border);border-radius:10px;
+    padding:14px 16px;margin:16px 0;
+  }
+  .concept-box .lbl{font-family:var(--mono);font-size:11px;color:var(--orange);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;}
+  .concept-box p{margin:0;font-size:14px;line-height:1.5;}
+
+  .source-link{
+    display:inline-flex;align-items:center;gap:6px;
+    font-family:var(--mono);font-size:12px;color:var(--d-concepts);
+    text-decoration:none;margin-top:4px;
+  }
+  .source-link:hover{text-decoration:underline;}
+
+  /* summary */
+  table{width:100%;border-collapse:collapse;margin:16px 0;}
+  th,td{text-align:left;padding:9px 8px;font-size:13px;border-bottom:1px solid var(--border);}
+  th{font-family:var(--mono);font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.04em;font-weight:500;}
+  td.num{font-family:var(--mono);font-weight:600;text-align:right;}
+
+  .footer-note{text-align:center;color:var(--text-dim);font-size:12px;margin-top:24px;font-family:var(--mono);}
+  .loading{text-align:center;padding:60px 20px;color:var(--text-dim);font-family:var(--mono);font-size:13px;}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="loading">Carregando seu progresso…</div>
+</div>
+
+<script>
+// ============================================================
+//  BANCO DE PERGUNTAS OFICIAIS (fixas)
+// ============================================================
+const DOMAINS = {
+  concepts: {name:"Conceitos da Nuvem", weight:0.24, color:"var(--d-concepts)"},
+  security: {name:"Segurança e Conformidade", weight:0.30, color:"var(--d-security)"},
+  tech: {name:"Tecnologia e Serviços", weight:0.34, color:"var(--d-tech)"},
+  billing: {name:"Cobrança, Preços e Suporte", weight:0.12, color:"var(--d-billing)"}
+};
+
+const BANK = [
+{id:1,domain:"concepts",topic:"Modelos de Nuvem",difficulty:"easy",type:"single",
+ q:"Uma empresa quer executar aplicações sem gerenciar servidores físicos, apenas pagando pelo que usa. Qual característica da computação em nuvem descreve esse benefício?",
+ options:[{k:"A",t:"Elasticidade"},{k:"B",t:"Agilidade"},{k:"C",t:"Modelo de custo variável (pay-as-you-go)"},{k:"D",t:"Alta disponibilidade"}],
+ correct:["C"],
+ exp:{A:"Elasticidade é a capacidade de escalar recursos automaticamente conforme a demanda, não está relacionada diretamente ao modelo de pagamento.",
+       B:"Agilidade se refere à velocidade de provisionar recursos, não ao custo.",
+       C:"O modelo pay-as-you-go elimina a necessidade de investimento inicial (CapEx) e cobra apenas pelos recursos consumidos (OpEx).",
+       D:"Alta disponibilidade trata de manter o sistema operante, não do modelo de cobrança."},
+ concept:"A AWS substitui gastos de capital (CapEx) por despesas operacionais variáveis (OpEx) — você paga apenas pelos recursos que consome.",
+ source:{label:"AWS — O que é computação em nuvem", url:"https://aws.amazon.com/what-is-cloud-computing/"}},
+
+{id:2,domain:"concepts",topic:"Modelos de Implantação",difficulty:"medium",type:"single",
+ q:"Uma empresa mantém dados sensíveis em seu datacenter local por exigência regulatória, mas quer usar a AWS para picos de processamento. Qual modelo de implantação é mais adequado?",
+ options:[{k:"A",t:"Nuvem pública"},{k:"B",t:"Nuvem híbrida"},{k:"C",t:"Nuvem privada"},{k:"D",t:"Multi-cloud"}],
+ correct:["B"],
+ exp:{A:"Nuvem pública significa mover tudo para a AWS, o que não atende à exigência de manter dados on-premises.",
+      B:"A nuvem híbrida conecta a infraestrutura on-premises à AWS, permitindo usar a nuvem para elasticidade (ex: AWS Outposts, Direct Connect, Storage Gateway) mantendo dados sensíveis localmente.",
+      C:"Nuvem privada não usa recursos de um provedor público como a AWS.",
+      D:"Multi-cloud envolve múltiplos provedores públicos, não é o foco do cenário."},
+ concept:"Nuvem híbrida combina infraestrutura on-premises com a nuvem AWS, útil para requisitos de conformidade, latência ou migração gradual.",
+ source:{label:"AWS — Hybrid Cloud", url:"https://aws.amazon.com/hybrid/"}},
+
+{id:3,domain:"concepts",topic:"Well-Architected",difficulty:"medium",type:"single",
+ q:"Qual pilar do AWS Well-Architected Framework foca na capacidade de um sistema se recuperar de falhas e atender à demanda?",
+ options:[{k:"A",t:"Excelência operacional"},{k:"B",t:"Confiabilidade"},{k:"C",t:"Eficiência de performance"},{k:"D",t:"Otimização de custos"}],
+ correct:["B"],
+ exp:{A:"Excelência operacional trata de executar e monitorar sistemas para entregar valor de negócio.",
+      B:"Confiabilidade (Reliability) é o pilar que trata da capacidade de recuperação de falhas, escalabilidade e atendimento à demanda.",
+      C:"Eficiência de performance foca no uso eficiente de recursos computacionais.",
+      D:"Otimização de custos foca em evitar gastos desnecessários."},
+ concept:"O Well-Architected Framework tem seis pilares: excelência operacional, segurança, confiabilidade, eficiência de performance, otimização de custos e sustentabilidade.",
+ source:{label:"AWS Well-Architected Framework", url:"https://aws.amazon.com/architecture/well-architected/"}},
+
+{id:4,domain:"concepts",topic:"Vantagens da Nuvem",difficulty:"easy",type:"multiple",
+ q:"Quais são vantagens da computação em nuvem segundo a AWS? (selecione 2)",
+ options:[{k:"A",t:"Trocar despesas de capital por despesas variáveis"},{k:"B",t:"Necessidade de comprar hardware com anos de antecedência"},{k:"C",t:"Ganhar agilidade e velocidade para experimentar"},{k:"D",t:"Maior tempo gasto em manutenção de datacenters"}],
+ correct:["A","C"],
+ exp:{A:"Correta: é uma das seis vantagens citadas pela AWS — trocar CapEx por OpEx.",
+      B:"Errada: essa é justamente a desvantagem do modelo tradicional, que a nuvem elimina.",
+      C:"Correta: a nuvem permite provisionar recursos em minutos, aumentando a agilidade.",
+      D:"Errada: a nuvem reduz o tempo com manutenção de infraestrutura física."},
+ concept:"As seis vantagens da AWS: trocar CapEx por OpEx, economia de escala, parar de adivinhar capacidade, aumentar velocidade e agilidade, parar de gastar com manutenção de datacenter, e ir global em minutos.",
+ source:{label:"AWS — Overview of Amazon Web Services", url:"https://docs.aws.amazon.com/whitepapers/latest/aws-overview/six-advantages-of-cloud-computing.html"}},
+
+{id:5,domain:"concepts",topic:"Infraestrutura Global",difficulty:"easy",type:"single",
+ q:"O que é uma Região (Region) da AWS?",
+ options:[{k:"A",t:"Um único datacenter físico"},{k:"B",t:"Uma localização geográfica com múltiplas Zonas de Disponibilidade isoladas"},{k:"C",t:"Um ponto de presença para cache de conteúdo"},{k:"D",t:"Um cluster de servidores dentro de uma Zona de Disponibilidade"}],
+ correct:["B"],
+ exp:{A:"Um datacenter físico é parte de uma Zona de Disponibilidade, não a Região inteira.",
+      B:"Uma Região é uma área geográfica composta por múltiplas Zonas de Disponibilidade (AZs) fisicamente separadas, mas interligadas.",
+      C:"Isso descreve um Edge Location, usado pelo CloudFront.",
+      D:"Isso descreve parte de uma AZ, não a Região."},
+ concept:"Cada Região AWS contém múltiplas Zonas de Disponibilidade isoladas, e cada AZ pode ter um ou mais datacenters.",
+ source:{label:"AWS Global Infrastructure", url:"https://aws.amazon.com/about-aws/global-infrastructure/"}},
+
+{id:6,domain:"concepts",topic:"Infraestrutura Global",difficulty:"medium",type:"single",
+ q:"Uma aplicação precisa entregar conteúdo estático (imagens, vídeos) com baixa latência para usuários no mundo todo. Qual serviço é o mais indicado?",
+ options:[{k:"A",t:"Amazon CloudFront"},{k:"B",t:"AWS Direct Connect"},{k:"C",t:"Amazon Route 53"},{k:"D",t:"AWS Global Accelerator"}],
+ correct:["A"],
+ exp:{A:"O CloudFront é a CDN (rede de distribuição de conteúdo) da AWS, que armazena conteúdo em cache nos Edge Locations próximos aos usuários.",
+      B:"Direct Connect é uma conexão de rede dedicada entre um datacenter on-premises e a AWS, não uma CDN.",
+      C:"Route 53 é o serviço de DNS da AWS, não distribui conteúdo em cache.",
+      D:"Global Accelerator otimiza o roteamento de tráfego de rede, mas não é focado em cache de conteúdo estático como o CloudFront."},
+ concept:"O Amazon CloudFront usa a rede global de Edge Locations da AWS para reduzir latência na entrega de conteúdo.",
+ source:{label:"Amazon CloudFront", url:"https://aws.amazon.com/cloudfront/"}},
+
+{id:7,domain:"security",topic:"IAM",difficulty:"easy",type:"single",
+ q:"Qual é a melhor prática recomendada pela AWS ao criar credenciais para acessar a conta?",
+ options:[{k:"A",t:"Usar sempre o usuário root para tarefas do dia a dia"},{k:"B",t:"Criar usuários IAM individuais com o mínimo de permissões necessárias"},{k:"C",t:"Compartilhar uma única credencial entre todos os funcionários"},{k:"D",t:"Desativar o MFA para agilizar o acesso"}],
+ correct:["B"],
+ exp:{A:"Errada: o usuário root tem acesso irrestrito e deve ser usado apenas para tarefas essenciais que o exigem.",
+      B:"Correta: a AWS recomenda o princípio do menor privilégio — criar usuários individuais com apenas as permissões necessárias.",
+      C:"Errada: credenciais compartilhadas dificultam auditoria e aumentam risco de segurança.",
+      D:"Errada: a AWS recomenda ativar o MFA, especialmente para a conta root."},
+ concept:"O IAM permite controlar de forma granular quem pode acessar quais recursos da AWS, seguindo o princípio do menor privilégio.",
+ source:{label:"AWS IAM — Boas práticas de segurança", url:"https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html"}},
+
+{id:8,domain:"security",topic:"IAM",difficulty:"medium",type:"single",
+ q:"Qual componente do IAM define um conjunto de permissões que pode ser assumido temporariamente por um usuário, aplicação ou serviço, sem precisar de credenciais de longo prazo?",
+ options:[{k:"A",t:"Grupo do IAM"},{k:"B",t:"Política do IAM"},{k:"C",t:"Função (Role) do IAM"},{k:"D",t:"Usuário do IAM"}],
+ correct:["C"],
+ exp:{A:"Um Grupo agrupa usuários para aplicar políticas em conjunto, mas não é assumido temporariamente.",
+      B:"Uma Política define permissões (o quê), mas não é ela mesma assumida — é anexada a usuários, grupos ou funções.",
+      C:"Uma Role (função) é assumida temporariamente e fornece credenciais de curta duração, ideal para serviços EC2, Lambda ou acesso federado.",
+      D:"Um usuário IAM tem credenciais de longo prazo associadas a uma pessoa ou aplicação específica."},
+ concept:"IAM Roles fornecem credenciais temporárias, evitando a necessidade de armazenar chaves de acesso de longa duração em código ou instâncias.",
+ source:{label:"AWS IAM Roles", url:"https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html"}},
+
+{id:9,domain:"security",topic:"Responsabilidade Compartilhada",difficulty:"medium",type:"single",
+ q:"No modelo de responsabilidade compartilhada da AWS, quem é responsável pela criptografia dos dados do cliente armazenados no Amazon S3?",
+ options:[{k:"A",t:"Somente a AWS"},{k:"B",t:"Somente o cliente"},{k:"C",t:"É responsabilidade do cliente configurar, mas a AWS fornece as ferramentas"},{k:"D",t:"Nenhuma das partes é responsável"}],
+ correct:["C"],
+ exp:{A:"A AWS não configura automaticamente a criptografia dos dados do cliente sem que ele habilite essa opção.",
+      B:"O cliente não faz isso sozinho do zero — a AWS fornece os mecanismos (SSE-S3, SSE-KMS, etc).",
+      C:"A AWS é responsável pela 'segurança DA nuvem' (infraestrutura), e o cliente pela 'segurança NA nuvem', incluindo configurar criptografia de dados usando as ferramentas fornecidas.",
+      D:"Segurança de dados sempre tem responsáveis definidos no modelo compartilhado."},
+ concept:"No modelo de responsabilidade compartilhada: AWS protege a infraestrutura global (hardware, rede, datacenters); o cliente é responsável pela segurança dos dados, configuração de IAM, criptografia e proteção do sistema operacional convidado.",
+ source:{label:"AWS Shared Responsibility Model", url:"https://aws.amazon.com/compliance/shared-responsibility-model/"}},
+
+{id:10,domain:"security",topic:"Segurança de Rede",difficulty:"medium",type:"single",
+ q:"Qual serviço da AWS funciona como um firewall a nível de instância (stateful), controlando tráfego de entrada e saída em recursos dentro de uma VPC?",
+ options:[{k:"A",t:"Network ACL"},{k:"B",t:"Security Group"},{k:"C",t:"AWS WAF"},{k:"D",t:"AWS Shield"}],
+ correct:["B"],
+ exp:{A:"Network ACLs operam no nível da sub-rede e são stateless (sem estado) — precisam de regras explícitas de entrada e saída.",
+      B:"Security Groups atuam no nível da instância (ENI) e são stateful — se o tráfego de entrada é permitido, a resposta de saída é automaticamente permitida.",
+      C:"AWS WAF protege aplicações web contra exploits comuns (SQL injection, XSS), atuando na camada de aplicação.",
+      D:"AWS Shield protege contra ataques DDoS, não é um firewall de instância."},
+ concept:"Security Groups são stateful e operam por instância; Network ACLs são stateless e operam por sub-rede — uma diferença clássica cobrada na prova.",
+ source:{label:"Amazon VPC — Security Groups", url:"https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html"}},
+
+{id:11,domain:"security",topic:"Compliance",difficulty:"easy",type:"single",
+ q:"Qual serviço da AWS oferece acesso a relatórios de conformidade, como SOC e PCI, sob demanda?",
+ options:[{k:"A",t:"AWS Artifact"},{k:"B",t:"AWS Config"},{k:"C",t:"Amazon Inspector"},{k:"D",t:"AWS Trusted Advisor"}],
+ correct:["A"],
+ exp:{A:"O AWS Artifact é o portal self-service para acessar relatórios de conformidade e auditoria da AWS (SOC, PCI DSS, ISO, etc).",
+      B:"AWS Config avalia e audita configurações de recursos, não fornece relatórios de conformidade de terceiros.",
+      C:"Amazon Inspector avalia vulnerabilidades de segurança em cargas de trabalho.",
+      D:"Trusted Advisor dá recomendações sobre custo, performance, segurança e limites de serviço, não relatórios de compliance."},
+ concept:"O AWS Artifact centraliza documentos de conformidade e contratos, como o Business Associate Addendum (BAA) para HIPAA.",
+ source:{label:"AWS Artifact", url:"https://aws.amazon.com/artifact/"}},
+
+{id:12,domain:"security",topic:"DDoS",difficulty:"medium",type:"single",
+ q:"Qual serviço protege recursos da AWS contra ataques de negação de serviço distribuído (DDoS)?",
+ options:[{k:"A",t:"AWS Shield"},{k:"B",t:"Amazon GuardDuty"},{k:"C",t:"AWS Macie"},{k:"D",t:"AWS KMS"}],
+ correct:["A"],
+ exp:{A:"O AWS Shield oferece proteção contra DDoS. A versão Standard é gratuita e automática; o Shield Advanced oferece proteção avançada e mitigação com suporte 24/7.",
+      B:"Amazon GuardDuty é um serviço de detecção de ameaças que analisa logs em busca de atividades maliciosas, não é focado especificamente em DDoS.",
+      C:"AWS Macie usa machine learning para descobrir e proteger dados sensíveis, como dados pessoais no S3.",
+      D:"AWS KMS gerencia chaves de criptografia, não está relacionado a DDoS."},
+ concept:"AWS Shield Standard protege automaticamente e sem custo todos os clientes contra os ataques DDoS mais comuns na camada de rede e transporte.",
+ source:{label:"AWS Shield", url:"https://aws.amazon.com/shield/"}},
+
+{id:13,domain:"security",topic:"IAM",difficulty:"hard",type:"multiple",
+ q:"Uma aplicação rodando em uma instância EC2 precisa acessar um bucket S3. Quais das opções a seguir são práticas recomendadas pela AWS? (selecione 2)",
+ options:[{k:"A",t:"Armazenar as chaves de acesso do IAM diretamente no código da aplicação"},{k:"B",t:"Anexar uma IAM Role à instância EC2 com permissões mínimas necessárias"},{k:"C",t:"Usar o usuário root para gerar credenciais de longa duração"},{k:"D",t:"Aplicar o princípio do menor privilégio na política anexada à Role"}],
+ correct:["B","D"],
+ exp:{A:"Errada: armazenar credenciais no código é uma prática insegura e desencorajada pela AWS.",
+      B:"Correta: anexar uma Role à instância fornece credenciais temporárias gerenciadas automaticamente, sem exposição de chaves.",
+      C:"Errada: o usuário root nunca deve ser usado para operações do dia a dia.",
+      D:"Correta: conceder apenas as permissões estritamente necessárias reduz a superfície de risco."},
+ concept:"IAM Roles para EC2 eliminam a necessidade de gerenciar credenciais manualmente e devem sempre seguir o princípio do menor privilégio.",
+ source:{label:"IAM Roles for Amazon EC2", url:"https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html"}},
+
+{id:14,domain:"tech",topic:"EC2",difficulty:"easy",type:"single",
+ q:"Qual modelo de compra do EC2 oferece o maior desconto, mas pode ser interrompido pela AWS quando a capacidade é necessária?",
+ options:[{k:"A",t:"On-Demand"},{k:"B",t:"Reserved Instances"},{k:"C",t:"Spot Instances"},{k:"D",t:"Savings Plans"}],
+ correct:["C"],
+ exp:{A:"On-Demand cobra por segundo/hora sem desconto por compromisso, e é o mais caro dos modelos.",
+      B:"Reserved Instances oferecem desconto (até 72%) em troca de compromisso de 1 ou 3 anos, mas não são interrompidas pela AWS.",
+      C:"Spot Instances usam capacidade ociosa da AWS com descontos de até 90%, mas podem ser interrompidas com aviso de 2 minutos quando a AWS precisa da capacidade de volta.",
+      D:"Savings Plans oferecem desconto por compromisso de uso, mas, como Reserved, não são interrompidas."},
+ concept:"Spot Instances são ideais para cargas de trabalho tolerantes a falhas e flexíveis, como processamento em batch e workloads stateless.",
+ source:{label:"Amazon EC2 Spot Instances", url:"https://aws.amazon.com/ec2/spot/"}},
+
+{id:15,domain:"tech",topic:"Armazenamento",difficulty:"medium",type:"single",
+ q:"Uma empresa precisa armazenar dados que raramente são acessados, mas que devem estar disponíveis em milissegundos quando necessário, ao menor custo possível. Qual classe de armazenamento do S3 é mais indicada?",
+ options:[{k:"A",t:"S3 Standard"},{k:"B",t:"S3 Standard-IA"},{k:"C",t:"S3 Glacier Deep Archive"},{k:"D",t:"S3 Intelligent-Tiering"}],
+ correct:["B"],
+ exp:{A:"S3 Standard é voltado para dados acessados frequentemente e tem custo de armazenamento mais alto.",
+      B:"S3 Standard-IA (Infrequent Access) é feito exatamente para esse cenário: dados acessados raramente, mas com necessidade de acesso rápido (milissegundos), a um custo de armazenamento menor.",
+      C:"Glacier Deep Archive é para dados que praticamente nunca são acessados, com tempo de recuperação de horas, não milissegundos.",
+      D:"Intelligent-Tiering move os dados automaticamente entre camadas, mas quando o padrão de acesso já é conhecido (raro, mas com necessidade de acesso rápido), Standard-IA é mais direto e é frequentemente a resposta esperada na prova."},
+ concept:"S3 Standard-IA equilibra custo de armazenamento reduzido com disponibilidade em milissegundos, cobrando uma taxa de recuperação por acesso.",
+ source:{label:"Amazon S3 Storage Classes", url:"https://aws.amazon.com/s3/storage-classes/"}},
+
+{id:16,domain:"tech",topic:"Banco de Dados",difficulty:"easy",type:"single",
+ q:"Qual serviço da AWS é um banco de dados relacional totalmente gerenciado, compatível com engines como MySQL, PostgreSQL e SQL Server?",
+ options:[{k:"A",t:"Amazon DynamoDB"},{k:"B",t:"Amazon RDS"},{k:"C",t:"Amazon Redshift"},{k:"D",t:"Amazon ElastiCache"}],
+ correct:["B"],
+ exp:{A:"DynamoDB é um banco de dados NoSQL chave-valor/documento, não relacional.",
+      B:"O Amazon RDS gerencia bancos de dados relacionais, cuidando de patches, backups e replicação, com suporte a múltiplas engines.",
+      C:"Redshift é um data warehouse voltado para análise de grandes volumes de dados (OLAP), não uma engine relacional transacional tradicional.",
+      D:"ElastiCache é um serviço de cache em memória (Redis/Memcached), não um banco relacional."},
+ concept:"O RDS automatiza tarefas administrativas de bancos relacionais como backups, patching de software e escalonamento de hardware.",
+ source:{label:"Amazon RDS", url:"https://aws.amazon.com/rds/"}},
+
+{id:17,domain:"tech",topic:"Banco de Dados",difficulty:"medium",type:"single",
+ q:"Uma aplicação de e-commerce precisa de um banco de dados NoSQL com latência de milissegundos de um dígito em qualquer escala. Qual serviço é o mais indicado?",
+ options:[{k:"A",t:"Amazon Aurora"},{k:"B",t:"Amazon DynamoDB"},{k:"C",t:"Amazon RDS for MySQL"},{k:"D",t:"Amazon Redshift"}],
+ correct:["B"],
+ exp:{A:"Aurora é um banco relacional (compatível com MySQL/PostgreSQL), não NoSQL.",
+      B:"DynamoDB é o banco de dados NoSQL totalmente gerenciado da AWS, projetado para latência consistente de milissegundos de um dígito em qualquer escala.",
+      C:"RDS for MySQL é relacional, não NoSQL.",
+      D:"Redshift é um data warehouse para análises, não para transações de baixa latência."},
+ concept:"DynamoDB é serverless, escala automaticamente e é ideal para aplicações que exigem alta performance e baixa latência previsível.",
+ source:{label:"Amazon DynamoDB", url:"https://aws.amazon.com/dynamodb/"}},
+
+{id:18,domain:"tech",topic:"Redes",difficulty:"medium",type:"single",
+ q:"O que é uma Amazon VPC?",
+ options:[{k:"A",t:"Um serviço de balanceamento de carga"},{k:"B",t:"Uma rede virtual isolada logicamente dentro da nuvem AWS"},{k:"C",t:"Um serviço de DNS gerenciado"},{k:"D",t:"Um serviço de monitoramento de rede"}],
+ correct:["B"],
+ exp:{A:"Balanceamento de carga é feito pelo Elastic Load Balancing (ELB), um serviço diferente.",
+      B:"A Amazon VPC (Virtual Private Cloud) permite provisionar uma seção logicamente isolada da nuvem AWS, onde você define sub-redes, tabelas de rotas e gateways.",
+      C:"DNS gerenciado é o Amazon Route 53.",
+      D:"Monitoramento é feito pelo Amazon CloudWatch/VPC Flow Logs, não é a definição de VPC."},
+ concept:"A VPC é a base da rede na AWS — permite total controle sobre IPs, sub-redes públicas/privadas, gateways e roteamento.",
+ source:{label:"Amazon VPC", url:"https://aws.amazon.com/vpc/"}},
+
+{id:19,domain:"tech",topic:"Computação",difficulty:"easy",type:"single",
+ q:"Qual serviço permite executar código sem provisionar ou gerenciar servidores, cobrando apenas pelo tempo de execução?",
+ options:[{k:"A",t:"Amazon EC2"},{k:"B",t:"AWS Lambda"},{k:"C",t:"Amazon Lightsail"},{k:"D",t:"AWS Elastic Beanstalk"}],
+ correct:["B"],
+ exp:{A:"EC2 exige provisionamento e gerenciamento de instâncias (servidores virtuais).",
+      B:"AWS Lambda é um serviço serverless de computação orientada a eventos — você só paga pelo tempo de execução do código, sem gerenciar infraestrutura.",
+      C:"Lightsail é uma solução simplificada de VPS, mas ainda envolve uma instância que roda continuamente.",
+      D:"Elastic Beanstalk facilita o deploy de aplicações, mas ainda provisiona recursos como EC2 por trás dos panos, não é serverless puro."},
+ concept:"Lambda é ideal para arquiteturas orientadas a eventos, como processar uploads no S3 ou responder a chamadas de API.",
+ source:{label:"AWS Lambda", url:"https://aws.amazon.com/lambda/"}},
+
+{id:20,domain:"tech",topic:"Elasticidade",difficulty:"medium",type:"single",
+ q:"Qual serviço ajusta automaticamente o número de instâncias EC2 com base na demanda, mantendo desempenho e reduzindo custos?",
+ options:[{k:"A",t:"Elastic Load Balancing"},{k:"B",t:"AWS Auto Scaling"},{k:"C",t:"Amazon CloudWatch"},{k:"D",t:"AWS OpsWorks"}],
+ correct:["B"],
+ exp:{A:"O Elastic Load Balancing distribui tráfego entre instâncias, mas não decide quantas instâncias devem existir.",
+      B:"AWS Auto Scaling monitora as aplicações e ajusta a capacidade automaticamente para manter desempenho estável ao menor custo possível.",
+      C:"CloudWatch monitora métricas e pode disparar alarmes, mas quem executa a ação de escalar é o Auto Scaling.",
+      D:"OpsWorks é um serviço de gerenciamento de configuração (Chef/Puppet), não de escalonamento automático."},
+ concept:"Auto Scaling e Elastic Load Balancing trabalham juntos: o ELB distribui o tráfego e o Auto Scaling ajusta a quantidade de instâncias.",
+ source:{label:"AWS Auto Scaling", url:"https://aws.amazon.com/autoscaling/"}},
+
+{id:21,domain:"tech",topic:"Implantação e Operação",difficulty:"hard",type:"single",
+ q:"Uma equipe quer implantar infraestrutura de forma consistente e repetível usando arquivos de configuração (Infrastructure as Code). Qual serviço da AWS é o mais adequado?",
+ options:[{k:"A",t:"AWS CloudFormation"},{k:"B",t:"AWS CodeDeploy"},{k:"C",t:"AWS Systems Manager"},{k:"D",t:"AWS Config"}],
+ correct:["A"],
+ exp:{A:"O AWS CloudFormation permite modelar e provisionar recursos da AWS usando templates (JSON/YAML), possibilitando Infrastructure as Code.",
+      B:"CodeDeploy automatiza a implantação de código em instâncias EC2, Lambda ou on-premises, mas não define infraestrutura.",
+      C:"Systems Manager ajuda a gerenciar e automatizar tarefas operacionais em recursos já existentes.",
+      D:"AWS Config audita e avalia configurações de recursos, mas não os provisiona."},
+ concept:"CloudFormation permite versionar e reutilizar templates de infraestrutura, garantindo ambientes consistentes.",
+ source:{label:"AWS CloudFormation", url:"https://aws.amazon.com/cloudformation/"}},
+
+{id:22,domain:"tech",topic:"Armazenamento",difficulty:"easy",type:"single",
+ q:"Qual serviço de armazenamento em bloco é usado como o disco rígido virtual de uma instância EC2?",
+ options:[{k:"A",t:"Amazon S3"},{k:"B",t:"Amazon EBS"},{k:"C",t:"Amazon EFS"},{k:"D",t:"AWS Storage Gateway"}],
+ correct:["B"],
+ exp:{A:"S3 é armazenamento de objetos, não de blocos, e não é anexado diretamente a uma instância como um disco.",
+      B:"O Amazon EBS (Elastic Block Store) fornece volumes de armazenamento em bloco persistentes, usados como discos rígidos virtuais para instâncias EC2.",
+      C:"EFS é um sistema de arquivos compartilhado (NFS) que pode ser montado em múltiplas instâncias simultaneamente.",
+      D:"Storage Gateway conecta ambientes on-premises ao armazenamento da AWS, não é o disco de uma instância."},
+ concept:"Volumes EBS existem independentemente do ciclo de vida da instância (se configurado) e podem ser anexados/desanexados como discos físicos.",
+ source:{label:"Amazon EBS", url:"https://aws.amazon.com/ebs/"}},
+
+{id:23,domain:"billing",topic:"Planos de Suporte",difficulty:"easy",type:"single",
+ q:"Qual plano de suporte da AWS é o único que oferece um Technical Account Manager (TAM) dedicado?",
+ options:[{k:"A",t:"Basic"},{k:"B",t:"Developer"},{k:"C",t:"Business"},{k:"D",t:"Enterprise"}],
+ correct:["D"],
+ exp:{A:"O plano Basic é gratuito e inclui apenas suporte relacionado à conta e faturamento, sem TAM.",
+      B:"O plano Developer oferece acesso a suporte técnico por e-mail, mas sem TAM.",
+      C:"O plano Business oferece suporte 24/7 por chat/telefone/e-mail, mas não inclui TAM.",
+      D:"Apenas o plano Enterprise (e Enterprise On-Ramp, de forma compartilhada) inclui um Technical Account Manager dedicado para orientação estratégica."},
+ concept:"Os planos de suporte da AWS são: Basic, Developer, Business e Enterprise (On-Ramp e Enterprise), cada um com SLAs e recursos crescentes.",
+ source:{label:"AWS Support Plans", url:"https://aws.amazon.com/premiumsupport/plans/"}},
+
+{id:24,domain:"billing",topic:"Ferramentas de Custo",difficulty:"medium",type:"single",
+ q:"Qual ferramenta da AWS permite prever gastos futuros com base no histórico de uso e definir alertas quando os custos ultrapassarem um valor definido?",
+ options:[{k:"A",t:"AWS Cost Explorer / AWS Budgets"},{k:"B",t:"AWS Trusted Advisor"},{k:"C",t:"AWS Pricing Calculator"},{k:"D",t:"AWS Organizations"}],
+ correct:["A"],
+ exp:{A:"O AWS Cost Explorer visualiza e analisa custos e uso ao longo do tempo, e o AWS Budgets permite definir alertas customizados quando o gasto (real ou previsto) ultrapassa um limite.",
+      B:"Trusted Advisor dá recomendações gerais de custo, segurança e performance, mas não é a ferramenta principal de orçamento e alertas.",
+      C:"Pricing Calculator estima custos antes de provisionar recursos, não monitora gastos reais.",
+      D:"AWS Organizations gerencia múltiplas contas, mas não é uma ferramenta de análise de custos em si."},
+ concept:"AWS Budgets permite alertas customizados por e-mail/SNS quando custos, uso ou cobertura de Reserved Instances ultrapassam limites definidos.",
+ source:{label:"AWS Budgets", url:"https://aws.amazon.com/aws-cost-management/aws-budgets/"}},
+
+{id:25,domain:"billing",topic:"Modelo de Cobrança",difficulty:"easy",type:"single",
+ q:"Qual das opções abaixo é considerada uma despesa operacional (OpEx), e não um investimento de capital (CapEx), no contexto da AWS?",
+ options:[{k:"A",t:"Comprar servidores físicos para o datacenter"},{k:"B",t:"Pagar uma fatura mensal pelo uso de instâncias EC2"},{k:"C",t:"Construir um novo datacenter"},{k:"D",t:"Adquirir licenças perpétuas de software para servidores próprios"}],
+ correct:["B"],
+ exp:{A:"Comprar servidores é um investimento de capital (CapEx), pago antecipadamente.",
+      B:"Pagar mensalmente pelo uso de recursos como o EC2 é uma despesa operacional (OpEx) — você paga conforme usa, sem investimento inicial.",
+      C:"Construir um datacenter é um grande investimento de capital.",
+      D:"Licenças perpétuas geralmente envolvem pagamento antecipado, caracterizando CapEx."},
+ concept:"Um dos principais benefícios da nuvem é substituir CapEx por OpEx, permitindo maior flexibilidade financeira.",
+ source:{label:"AWS Cloud Economics", url:"https://aws.amazon.com/economics/"}},
+
+{id:26,domain:"billing",topic:"Programas de Preços",difficulty:"medium",type:"single",
+ q:"Uma startup quer reduzir custos do EC2 comprometendo-se com um valor de gasto por hora ($/hora) por 1 ou 3 anos, independentemente da família ou região da instância. Qual opção é essa?",
+ options:[{k:"A",t:"Reserved Instances"},{k:"B",t:"Savings Plans"},{k:"C",t:"Spot Instances"},{k:"D",t:"Dedicated Hosts"}],
+ correct:["B"],
+ exp:{A:"Reserved Instances exigem compromisso com uma família de instância e região específicas (com algumas exceções de flexibilidade limitada).",
+      B:"Savings Plans oferecem desconto em troca de compromisso de gasto ($/hora) por 1 ou 3 anos, com flexibilidade entre famílias de instância, tamanhos, SO e região (no caso do Compute Savings Plan).",
+      C:"Spot Instances não envolvem compromisso — são baseadas em capacidade ociosa e podem ser interrompidas.",
+      D:"Dedicated Hosts são servidores físicos dedicados a um único cliente, focados em conformidade de licenciamento, não em desconto por compromisso flexível."},
+ concept:"Savings Plans oferecem mais flexibilidade que Reserved Instances, sendo baseados em valor de gasto por hora, não em um tipo específico de instância.",
+ source:{label:"AWS Savings Plans", url:"https://aws.amazon.com/savingsplans/"}},
+
+{id:27,domain:"security",topic:"Segurança de Dados",difficulty:"easy",type:"single",
+ q:"Qual serviço da AWS gerencia e controla chaves de criptografia usadas para proteger dados em outros serviços, como S3 e EBS?",
+ options:[{k:"A",t:"AWS KMS"},{k:"B",t:"AWS IAM"},{k:"C",t:"AWS Secrets Manager"},{k:"D",t:"Amazon Macie"}],
+ correct:["A"],
+ exp:{A:"O AWS KMS (Key Management Service) permite criar e controlar chaves de criptografia usadas para proteger dados em diversos serviços da AWS.",
+      B:"IAM controla identidades e permissões de acesso, não chaves de criptografia de dados.",
+      C:"Secrets Manager gerencia segredos como senhas e credenciais de banco de dados, um caso de uso diferente do gerenciamento de chaves de criptografia.",
+      D:"Amazon Macie identifica dados sensíveis usando machine learning, não gerencia chaves."},
+ concept:"O KMS se integra nativamente a serviços como S3, EBS e RDS para habilitar criptografia server-side com chaves gerenciadas.",
+ source:{label:"AWS Key Management Service", url:"https://aws.amazon.com/kms/"}},
+
+{id:28,domain:"security",topic:"Governança",difficulty:"medium",type:"single",
+ q:"Qual serviço permite gerenciar centralmente várias contas da AWS, aplicando políticas de controle de serviço (SCPs) em toda a organização?",
+ options:[{k:"A",t:"AWS Organizations"},{k:"B",t:"AWS IAM Identity Center"},{k:"C",t:"AWS Control Tower"},{k:"D",t:"AWS Config"}],
+ correct:["A"],
+ exp:{A:"O AWS Organizations permite consolidar múltiplas contas AWS e aplicar Service Control Policies (SCPs) para restringir o que as contas-membro podem fazer.",
+      B:"IAM Identity Center (antigo AWS SSO) gerencia acesso único a múltiplas contas, mas não define SCPs.",
+      C:"Control Tower automatiza a criação de um ambiente multiconta com boas práticas, mas é construído sobre o Organizations.",
+      D:"AWS Config avalia conformidade de configuração de recursos, não gerencia contas."},
+ concept:"Service Control Policies (SCPs) do AWS Organizations definem os limites máximos de permissões que contas-membro podem ter, mesmo que o IAM local permita mais.",
+ source:{label:"AWS Organizations", url:"https://aws.amazon.com/organizations/"}},
+
+{id:29,domain:"concepts",topic:"Vantagens da Nuvem",difficulty:"hard",type:"single",
+ q:"Uma empresa de jogos precisa lançar seu produto simultaneamente em 8 países diferentes, com baixa latência local em cada um. Qual vantagem da nuvem AWS melhor endereça essa necessidade?",
+ options:[{k:"A",t:"Trocar CapEx por OpEx"},{k:"B",t:"Ir global em minutos"},{k:"C",t:"Parar de adivinhar capacidade"},{k:"D",t:"Economia de escala"}],
+ correct:["B"],
+ exp:{A:"Trocar CapEx por OpEx trata do modelo financeiro, não da distribuição geográfica.",
+      B:"'Ir global em minutos' é a vantagem que descreve a capacidade de implantar aplicações em múltiplas Regiões AWS ao redor do mundo rapidamente, reduzindo latência para usuários locais.",
+      C:"Parar de adivinhar capacidade trata de dimensionamento de recursos, não de presença geográfica.",
+      D:"Economia de escala trata de custos menores por volume agregado de uso na AWS."},
+ concept:"A infraestrutura global da AWS abrange dezenas de Regiões, permitindo implantar aplicações próximas aos usuários finais em minutos.",
+ source:{label:"AWS Global Infrastructure", url:"https://aws.amazon.com/about-aws/global-infrastructure/"}},
+
+{id:30,domain:"tech",topic:"Mensageria",difficulty:"medium",type:"single",
+ q:"Qual serviço permite desacoplar componentes de uma aplicação usando filas de mensagens?",
+ options:[{k:"A",t:"Amazon SNS"},{k:"B",t:"Amazon SQS"},{k:"C",t:"Amazon EventBridge"},{k:"D",t:"AWS Step Functions"}],
+ correct:["B"],
+ exp:{A:"Amazon SNS é um serviço de publicação/assinatura (pub/sub) para notificações, não uma fila de mensagens ponto a ponto.",
+      B:"O Amazon SQS (Simple Queue Service) é um serviço de filas totalmente gerenciado que permite desacoplar e escalar microsserviços, aplicações distribuídas e sistemas serverless.",
+      C:"EventBridge é um barramento de eventos para conectar aplicações usando dados de eventos, um padrão diferente de fila.",
+      D:"Step Functions orquestra fluxos de trabalho entre serviços, não é uma fila."},
+ concept:"SQS permite que componentes de uma aplicação enviem, armazenem e recebam mensagens de forma assíncrona, sem perder mensagens durante picos de tráfego.",
+ source:{label:"Amazon SQS", url:"https://aws.amazon.com/sqs/"}},
+
+{id:31,domain:"security",topic:"Monitoramento e Auditoria",difficulty:"medium",type:"single",
+ q:"Qual serviço registra todas as chamadas de API feitas na conta AWS, permitindo auditoria de quem fez o quê e quando?",
+ options:[{k:"A",t:"Amazon CloudWatch"},{k:"B",t:"AWS CloudTrail"},{k:"C",t:"AWS Config"},{k:"D",t:"VPC Flow Logs"}],
+ correct:["B"],
+ exp:{A:"CloudWatch monitora métricas de performance e logs de aplicações, mas não registra chamadas de API por padrão.",
+      B:"O AWS CloudTrail registra todas as chamadas de API feitas na conta, incluindo quem fez a chamada, quando e de onde — essencial para auditoria e conformidade.",
+      C:"AWS Config rastreia mudanças na configuração de recursos ao longo do tempo, um foco diferente do CloudTrail.",
+      D:"VPC Flow Logs capturam informações sobre o tráfego IP que entra e sai de interfaces de rede, não chamadas de API."},
+ concept:"CloudTrail é fundamental para auditoria de segurança, análise forense e conformidade, respondendo 'quem fez o quê' na conta AWS.",
+ source:{label:"AWS CloudTrail", url:"https://aws.amazon.com/cloudtrail/"}},
+
+{id:32,domain:"tech",topic:"Migração",difficulty:"hard",type:"single",
+ q:"Uma empresa precisa transferir 100 TB de dados de seu datacenter para a AWS, mas sua conexão de internet é limitada e levaria meses. Qual serviço é o mais indicado?",
+ options:[{k:"A",t:"AWS Direct Connect"},{k:"B",t:"AWS Snowball"},{k:"C",t:"AWS DataSync"},{k:"D",t:"Amazon S3 Transfer Acceleration"}],
+ correct:["B"],
+ exp:{A:"Direct Connect estabelece uma conexão de rede dedicada, mas ainda depende de link físico contratado e pode levar tempo para implantar, sem resolver o problema imediato de uma transferência única e volumosa.",
+      B:"O AWS Snowball é um dispositivo físico enviado ao cliente para transferir grandes volumes de dados offline, ideal quando a transferência pela internet seria lenta demais.",
+      C:"DataSync automatiza a transferência de dados pela rede entre on-premises e AWS, mas ainda depende da largura de banda disponível.",
+      D:"S3 Transfer Acceleration otimiza uploads via internet usando os Edge Locations do CloudFront, mas não resolve limitações graves de largura de banda."},
+ concept:"Os dispositivos AWS Snow Family (Snowcone, Snowball, Snowmobile) são usados para migração de dados em larga escala quando a transferência pela rede não é viável.",
+ source:{label:"AWS Snow Family", url:"https://aws.amazon.com/snow/"}},
+];
+
+// ============================================================
+//  ARMAZENAMENTO (funciona na nuvem E em arquivo local)
+// ============================================================
+const STORE = {
+  get(key){
+    return new Promise(resolve=>{
+      try{
+        if(window.storage && typeof window.storage.get==='function'){
+          window.storage.get(key,false).then(r=>{
+            if(r && r.value){ try{ resolve(JSON.parse(r.value)); }catch(e){ resolve(null); } }
+            else resolve(null);
+          }).catch(()=>resolve(fallbackGet(key)));
+        } else {
+          resolve(fallbackGet(key));
+        }
+      }catch(e){ resolve(fallbackGet(key)); }
+    });
+  },
+  set(key,val){
+    return new Promise(resolve=>{
+      try{
+        if(window.storage && typeof window.storage.set==='function'){
+          window.storage.set(key, JSON.stringify(val), false).then(()=>resolve()).catch(()=>{ fallbackSet(key,val); resolve(); });
+        } else {
+          fallbackSet(key,val); resolve();
+        }
+      }catch(e){ fallbackSet(key,val); resolve(); }
+    });
+  }
+};
+function fallbackGet(key){ try{ const v = localStorage.getItem('aws-trainer-'+key); return v ? JSON.parse(v) : null; }catch(e){ return null; } }
+function fallbackSet(key,val){ try{ localStorage.setItem('aws-trainer-'+key, JSON.stringify(val)); }catch(e){ console.error('Falha ao salvar', e); } }
+
+// ============================================================
+//  ESTADO GLOBAL
+// ============================================================
+const STORAGE_KEY = 'state';
+let state = null;
+let session = null;        // sessão de treino atual
+let view = 'dashboard';    // dashboard | generator | bank
+let pending = [];          // questões pendentes de uma aula (ainda não salvas)
+let genForm = { name:'', domain:'concepts', count:5, text:'' };
+let genStatusMsg = '';
+let editor = null;         // editor de pergunta
+let lessonList = [];       // nomes das aulas (recalculado no render)
+
+function defaultState(){
+  return {
+    day: 1,
+    askedHistory: [],
+    domainStats: {concepts:{c:0,t:0}, security:{c:0,t:0}, tech:{c:0,t:0}, billing:{c:0,t:0}},
+    topicStats: {},
+    totalAnswered: 0,
+    totalCorrect: 0,
+    daysCompleted: 0,
+    customQuestions: [],
+    apiKey: '',
+    aiModel: 'gemini-2.5-flash'
+  };
+}
+
+function emptyEditor(){
+  return { idx:null, customId:null, q:'', type:'single', difficulty:'medium', topic:'', options:['','','',''], correct:[], exp:['','','',''], concept:'' };
+}
+
+async function loadState(){
+  const base = defaultState();
+  const saved = await STORE.get(STORAGE_KEY);
+  state = Object.assign(base, saved || {});
+  state.domainStats = Object.assign(base.domainStats, state.domainStats || {});
+  state.topicStats = state.topicStats || {};
+  state.customQuestions = Array.isArray(state.customQuestions) ? state.customQuestions : [];
+  state.apiKey = state.apiKey || '';
+  state.aiModel = state.aiModel || 'gemini-2.5-flash';
+  editor = emptyEditor();
+  render();
+}
+
+async function saveState(){
+  await STORE.set(STORAGE_KEY, state);
+}
+
+// ============================================================
+//  HELPERS
+// ============================================================
+function esc(s){
+  return String(s==null?'':s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+function pct(c,t){ return t>0 ? Math.round((c/t)*100) : 0; }
+function diffClass(d){ return {easy:'diff-easy',medium:'diff-medium',hard:'diff-hard'}[d] || 'diff-medium'; }
+function diffLabel(d){ return {easy:'Fácil',medium:'Médio',hard:'Difícil'}[d] || 'Médio'; }
+function domainColor(domain){ return DOMAINS[domain] ? DOMAINS[domain].color : 'var(--text-dim)'; }
+function initDayStats(){ return {concepts:{c:0,t:0}, security:{c:0,t:0}, tech:{c:0,t:0}, billing:{c:0,t:0}}; }
+
+function allQuestions(){ return BANK.concat(state.customQuestions || []); }
+
+function nextQuestionId(){
+  let max = 0;
+  allQuestions().forEach(q=>{ if(typeof q.id==='number' && q.id>max) max = q.id; });
+  return max + 1;
+}
+
+function estimatedScore(){
+  if(state.totalAnswered < 3) return 0;
+  const overall = state.totalCorrect / state.totalAnswered;
+  return Math.round(overall*1000);
+}
+
+// ============================================================
+//  SELEÇÃO DE QUESTÕES
+// ============================================================
+function pickQuestionsForDay(){
+  const targets = {concepts:2, security:3, tech:3, billing:2};
+  const weakTopics = Object.entries(state.topicStats)
+    .filter(([,v])=>v.t>=2 && (v.c/v.t)<0.7)
+    .map(([k])=>k);
+
+  let selected = [];
+  Object.keys(targets).forEach(domain=>{
+    let pool = allQuestions().filter(q=>q.domain===domain);
+    pool.sort((a,b)=>{
+      const aWeak = weakTopics.includes(a.topic) ? 1 : 0;
+      const bWeak = weakTopics.includes(b.topic) ? 1 : 0;
+      if(aWeak!==bWeak) return bWeak-aWeak;
+      const aRecent = state.askedHistory.includes(a.id) ? 1 : 0;
+      const bRecent = state.askedHistory.includes(b.id) ? 1 : 0;
+      if(aRecent!==bRecent) return aRecent-bRecent;
+      return Math.random()-0.5;
+    });
+    selected.push(...pool.slice(0, targets[domain]));
+  });
+  return shuffle(selected);
+}
+
+function pickLessonQuestions(lessonName){
+  return shuffle((state.customQuestions || []).filter(q=>(q.lesson||'Sem aula')===lessonName).slice());
+}
+
+// ============================================================
+//  AÇÕES DE SESSÃO
+// ============================================================
+function startDay(){
+  session = {
+    mode:'daily',
+    questions: pickQuestionsForDay(),
+    idx:0,
+    answers:[],
+    dayDomainStats: initDayStats(),
+    dayTopicStats: {},
+    currentSelection: [],
+    answered: false
+  };
+  view = 'quiz';
+  render();
+}
+
+function startLesson(index){
+  const name = lessonList[index];
+  if(!name) return;
+  const qs = pickLessonQuestions(name);
+  if(!qs.length){ alert('Essa aula não tem perguntas.'); return; }
+  session = {
+    mode:'lesson',
+    lesson: name,
+    questions: qs,
+    idx:0,
+    answers:[],
+    dayDomainStats: initDayStats(),
+    dayTopicStats: {},
+    currentSelection: [],
+    answered: false
+  };
+  view = 'quiz';
+  render();
+}
+
+function retryLesson(){
+  if(!session || !session.lesson) return;
+  const qs = pickLessonQuestions(session.lesson);
+  if(!qs.length){ backToDashboard(); return; }
+  session = {
+    mode:'lesson',
+    lesson: session.lesson,
+    questions: qs,
+    idx:0,
+    answers:[],
+    dayDomainStats: initDayStats(),
+    dayTopicStats: {},
+    currentSelection: [],
+    answered: false
+  };
+  render();
+}
+
+function selectOption(key){
+  const q = session.questions[session.idx];
+  session.currentSelection = session.currentSelection || [];
+  if(q.type==='single'){
+    session.currentSelection = [key];
+  } else {
+    const i = session.currentSelection.indexOf(key);
+    if(i>-1) session.currentSelection.splice(i,1);
+    else session.currentSelection.push(key);
+  }
+  render();
+}
+
+function submitAnswer(){
+  const q = session.questions[session.idx];
+  const sel = (session.currentSelection || []).slice().sort();
+  const correct = q.correct.slice().sort();
+  const isCorrect = JSON.stringify(sel) === JSON.stringify(correct);
+
+  session.answers.push({q, selected:sel, correct:isCorrect});
+  session.dayDomainStats[q.domain] = session.dayDomainStats[q.domain] || {c:0,t:0};
+  session.dayDomainStats[q.domain].t++;
+  if(isCorrect) session.dayDomainStats[q.domain].c++;
+  session.dayTopicStats[q.topic] = session.dayTopicStats[q.topic] || {c:0,t:0};
+  session.dayTopicStats[q.topic].t++;
+  if(isCorrect) session.dayTopicStats[q.topic].c++;
+
+  session.answered = true;
+  render();
+}
+
+function nextQuestion(){
+  session.idx++;
+  session.currentSelection = [];
+  session.answered = false;
+  if(session.idx >= session.questions.length){
+    finishDay();
+  } else {
+    render();
+  }
+}
+
+function finishDay(){
+  Object.keys(session.dayDomainStats).forEach(d=>{
+    state.domainStats[d].c += session.dayDomainStats[d].c;
+    state.domainStats[d].t += session.dayDomainStats[d].t;
+  });
+  Object.keys(session.dayTopicStats).forEach(t=>{
+    state.topicStats[t] = state.topicStats[t] || {c:0,t:0};
+    state.topicStats[t].c += session.dayTopicStats[t].c;
+    state.topicStats[t].t += session.dayTopicStats[t].t;
+  });
+  state.totalAnswered += session.answers.length;
+  state.totalCorrect += session.answers.filter(a=>a.correct).length;
+  if(session.mode==='daily'){
+    state.askedHistory = session.questions.map(q=>q.id);
+    state.daysCompleted++;
+  }
+  saveState();
+  session.finished = true;
+  render();
+}
+
+function goNextDay(){
+  state.day++;
+  saveState();
+  session = null;
+  render();
+}
+
+function backToDashboard(){
+  session = null;
+  view = 'dashboard';
+  render();
+}
+
+function go(v){
+  if(session && !session.finished && !confirm('Sair do treino atual? As respostas desta sessão não serão salvas.')) return;
+  session = null;
+  view = v;
+  pending = [];
+  editor = emptyEditor();
+  genStatusMsg = '';
+  render();
+}
+
+// ============================================================
+//  IA — GERAÇÃO DE QUESTÕES A PARTIR DO TEXTO DA AULA
+// ============================================================
+function buildPrompt(text, count){
+  return `Você é um professor especialista na certificação AWS Cloud Practitioner (CLF-C02). Crie ${count} questões de múltipla escolha em português (pt-BR) a partir do texto de aula abaixo, para praticar o conteúdo.
+
+REGRAS:
+1. Prefira questões do tipo "single" (1 resposta correta). Use "multiple" SOMENTE quando houver exatamente 2 respostas corretas e, nesse caso, termine a pergunta com "(selecione 2)".
+2. Toda questão deve ter exatamente 4 opções (A, B, C, D).
+3. O campo "correct" é um array de letras (ex: ["C"] ou ["A","D"]).
+4. Para cada opção, escreva uma explicação curta em "exp" (usando a letra como chave), dizendo por que está certa ou errada.
+5. "concept": a ideia-chave para memorizar (1 a 2 frases).
+6. "difficulty": "easy", "medium" ou "hard".
+7. "topic": um tema curto dentro do conteúdo (ex: "Classes S3").
+8. As questões devem testar COMPREENSÃO, não decoreba, e ser realistas no estilo da prova CLF-C02.
+
+Responda SOMENTE com um array JSON válido, sem texto extra, neste formato:
+[
+  {
+    "type": "single",
+    "difficulty": "medium",
+    "q": "Pergunta aqui?",
+    "options": [
+      {"k":"A","t":"opção 1"},
+      {"k":"B","t":"opção 2"},
+      {"k":"C","t":"opção 3"},
+      {"k":"D","t":"opção 4"}
+    ],
+    "correct": ["C"],
+    "exp": {
+      "A":"explicação",
+      "B":"explicação",
+      "C":"explicação",
+      "D":"explicação"
+    },
+    "concept": "ideia-chave",
+    "topic": "tema"
+  }
+]
+
+TEXTO DA AULA:
+${text}`;
+}
+
+async function callGemini(prompt){
+  const model = (state.aiModel || 'gemini-2.5-flash').trim();
+  const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(state.apiKey);
+  const res = await fetch(url, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      contents:[{parts:[{text:prompt}]}],
+      generationConfig:{temperature:0.7, maxOutputTokens: 4096}
+    })
+  });
+  if(!res.ok){
+    let msg = 'HTTP ' + res.status;
+    try{ const j = await res.json(); msg = (j.error && j.error.message) || msg; }catch(e){}
+    throw new Error(msg);
+  }
+  const j = await res.json();
+  const txt = j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts
+    ? j.candidates[0].content.parts.map(p=>p.text||'').join('')
+    : '';
+  if(!txt) throw new Error('A IA retornou uma resposta vazia.');
+  return txt;
+}
+
+function parseQuestions(txt){
+  let t = String(txt||'').trim();
+  t = t.replace(/```(json)?/gi,'').trim();
+  const a = t.indexOf('[');
+  const b = t.lastIndexOf(']');
+  if(a>-1 && b>a) t = t.slice(a, b+1);
+  try{
+    const arr = JSON.parse(t);
+    if(Array.isArray(arr)) return arr;
+  }catch(e){}
+  return null;
+}
+
+function normalizeQuestion(q, lessonName){
+  const topic = String(q.topic||'').trim() || lessonName || 'Aula';
+  return {
+    id: q.id || 0,
+    domain: q.domain || genForm.domain || 'concepts',
+    topic: topic,
+    difficulty: ['easy','medium','hard'].includes(q.difficulty) ? q.difficulty : 'medium',
+    type: q.type==='multiple' ? 'multiple' : 'single',
+    q: String(q.q||'').trim(),
+    options: ['A','B','C','D'].map((l,i)=>{
+      const o = (q.options && q.options[i]) || {};
+      return {k:l, t:String(o.t!=null?o.t:(o.text||'')).trim()};
+    }),
+    correct: (q.correct||[]).map(String),
+    exp: (function(){
+      const e = {};
+      ['A','B','C','D'].forEach((l,i)=>{
+        e[l] = String((q.exp && (q.exp[l]!=null ? q.exp[l] : ((q.options&&q.options[i]&&q.options[i].exp)||'')))).trim();
+      });
+      return e;
+    })(),
+    concept: String(q.concept||'').trim(),
+    source: {label: lessonName || 'Aula', url:''},
+    lesson: lessonName || 'Aula',
+    createdAt: Date.now()
+  };
+}
+
+async function generateFromAI(){
+  genStatusMsg = '';
+  if(!state.apiKey){
+    genStatusMsg = '<div class="warn">Você ainda não configurou a chave da IA. Vá em <b>Banco → Configurações da IA</b> e cole sua chave gratuita do Google Gemini (crie em aistudio.google.com/app/apikey).</div>';
+    render();
+    return;
+  }
+  if(!genForm.text.trim()){
+    genStatusMsg = '<div class="warn">Cole o texto da aula primeiro.</div>';
+    render();
+    return;
+  }
+  genStatusMsg = '<div class="loading" style="padding:16px;">Gerando questões... pode levar alguns segundos.</div>';
+  render();
+  const count = Math.min(10, Math.max(1, genForm.count || 5));
+  try{
+    const txt = await callGemini(buildPrompt(genForm.text, count));
+    const arr = parseQuestions(txt);
+    if(!arr || !arr.length) throw new Error('A IA não retornou questões válidas. Tente novamente.');
+    const normalized = arr.map(q=>normalizeQuestion(q, genForm.name.trim()||'Aula'));
+    pending = pending.concat(normalized);
+    genStatusMsg = '<div class="ok-msg">' + normalized.length + ' questão(ões) gerada(s). Revise abaixo e ajuste se precisar antes de salvar.</div>';
+  }catch(e){
+    genStatusMsg = '<div class="warn">Erro ao gerar: ' + esc(e.message || e) + '</div>';
+  }
+  render();
+}
+
+// ============================================================
+//  GERADOR DE AULA
+// ============================================================
+function onGenInput(){
+  genForm.name = (document.getElementById('lessonName')||{}).value || '';
+  genForm.domain = (document.getElementById('lessonDomain')||{}).value || 'concepts';
+  genForm.count = parseInt((document.getElementById('lessonCount')||{}).value) || 5;
+  genForm.text = (document.getElementById('lessonText')||{}).value || '';
+}
+
+function addManual(){
+  editor = emptyEditor();
+  editor.idx = -1;
+  render();
+}
+
+function editPending(i){
+  fillEditorFromQ(pending[i]);
+  editor.idx = i;
+  editor.customId = null;
+  render();
+}
+
+function deletePending(i){
+  pending.splice(i,1);
+  if(editor.idx !== null){
+    if(editor.idx === i) editor = emptyEditor();
+    else if(editor.idx > i) editor.idx--;
+  }
+  render();
+}
+
+function clearPending(){
+  pending = [];
+  editor = emptyEditor();
+  render();
+}
+
+function fillEditorFromQ(q){
+  editor = emptyEditor();
+  editor.q = q.q || '';
+  editor.type = q.type || 'single';
+  editor.difficulty = q.difficulty || 'medium';
+  editor.topic = q.topic || '';
+  editor.options = ['A','B','C','D'].map(l=>{
+    const o = (q.options||[]).find(x=>x.k===l);
+    return o ? o.t : '';
+  });
+  editor.correct = (q.correct||[]).slice();
+  editor.exp = ['A','B','C','D'].map(l=> (q.exp||{})[l] || '');
+  editor.concept = q.concept || '';
+}
+
+function editorToggle(key){
+  if(editor.type==='single'){
+    editor.correct = [key];
+  } else {
+    const i = editor.correct.indexOf(key);
+    if(i>-1) editor.correct.splice(i,1);
+    else editor.correct.push(key);
+  }
+  render();
+}
+
+function saveEditor(){
+  const qtext = editor.q.trim();
+  const opts = editor.options.map((t,i)=>({k:['A','B','C','D'][i], t:t.trim()}));
+  if(!qtext){ alert('Escreva a pergunta.'); return; }
+  if(opts.filter(o=>o.t).length < 2){ alert('Preencha pelo menos 2 opções.'); return; }
+  if(editor.correct.length < 1){ alert('Marque a(s) resposta(s) correta(s).'); return; }
+  if(editor.correct.length > 1 && editor.type==='single'){ alert('Tipo "uma correta" aceita apenas 1 resposta.'); return; }
+
+  const obj = {
+    q: qtext,
+    type: editor.type,
+    difficulty: editor.difficulty,
+    topic: editor.topic.trim() || genForm.name.trim() || 'Aula',
+    options: opts,
+    correct: editor.correct.slice(),
+    exp: (function(){
+      const e = {};
+      editor.exp.forEach((x,i)=>{ e[['A','B','C','D'][i]] = x.trim(); });
+      return e;
+    })(),
+    concept: editor.concept.trim()
+  };
+
+  if(editor.customId !== null){
+    const idx = state.customQuestions.findIndex(q=>q.id===editor.customId);
+    if(idx>-1){ Object.assign(state.customQuestions[idx], obj); }
+    saveState();
+    editor = emptyEditor();
+    render();
+    return;
+  }
+
+  if(editor.idx >= 0 && editor.idx < pending.length){
+    Object.assign(pending[editor.idx], obj);
+  } else {
+    pending.push(Object.assign({}, obj, {
+      domain: genForm.domain,
+      source: {label: genForm.name.trim()||'Aula', url:''},
+      lesson: genForm.name.trim()||'Aula',
+      createdAt: Date.now()
+    }));
+  }
+  editor = emptyEditor();
+  render();
+}
+
+function cancelEditor(){
+  editor = emptyEditor();
+  render();
+}
+
+function saveLesson(){
+  const name = genForm.name.trim() || ('Aula ' + (state.daysCompleted+1));
+  const incomplete = pending.filter(q=> !q.q || q.options.filter(o=>o.t).length<2 || !q.correct.length);
+  if(incomplete.length){
+    alert('Há questões incompletas (faltando pergunta, opções ou resposta correta). Complete-as ou remova antes de salvar.');
+    return;
+  }
+  const list = pending.map(q=>{
+    const n = normalizeQuestion(q, name);
+    n.id = nextQuestionId();
+    return n;
+  });
+  state.customQuestions = state.customQuestions.concat(list);
+  saveState().then(()=>{
+    alert('Aula "' + name + '" salva! ' + list.length + ' questão(ões) adicionada(s) ao banco.');
+    pending = [];
+    editor = emptyEditor();
+    genForm = {name:'', domain:'concepts', count:5, text:''};
+    genStatusMsg = '';
+    view = 'dashboard';
+    render();
+  });
+}
+
+// ============================================================
+//  BANCO / CONFIGURAÇÕES
+// ============================================================
+function editCustom(id){
+  const q = state.customQuestions.find(x=>x.id===id);
+  if(!q) return;
+  fillEditorFromQ(q);
+  editor.customId = id;
+  editor.idx = null;
+  render();
+}
+
+function deleteCustom(id){
+  if(!confirm('Excluir esta pergunta?')) return;
+  state.customQuestions = state.customQuestions.filter(q=>q.id!==id);
+  saveState().then(()=>{ render(); });
+}
+
+function deleteLesson(i){
+  const name = lessonList[i];
+  if(!name) return;
+  if(!confirm('Excluir a aula "' + name + '" e todas as suas questões?')) return;
+  state.customQuestions = state.customQuestions.filter(q=>(q.lesson||'Sem aula')!==name);
+  saveState().then(()=>{ render(); });
+}
+
+function saveKey(){
+  saveState().then(()=>{ alert('Configurações salvas!'); });
+}
+
+function exportJSON(){
+  const data = { app:'aws-trainer', exportedAt:new Date().toISOString(), custom: state.customQuestions };
+  const area = document.getElementById('exportArea');
+  area.value = JSON.stringify(data, null, 2);
+  document.getElementById('exportBox').style.display = 'block';
+  const msg = document.getElementById('copyMsg');
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(area.value).then(()=>{ if(msg) msg.innerText = 'Copiado para a área de transferência!'; }).catch(()=>{});
+  }
+}
+
+function normalizeImported(q){
+  const lesson = String(q.lesson||'').trim() || String(q.topic||'').trim() || 'Importado';
+  const n = normalizeQuestion(q, lesson);
+  n.id = nextQuestionId();
+  n.lesson = lesson;
+  n.source = {label: lesson, url:''};
+  return n;
+}
+
+function importJSON(){
+  const raw = (document.getElementById('importArea')||{}).value || '';
+  if(!raw.trim()){ alert('Cole um JSON primeiro.'); return; }
+  try{
+    let data = JSON.parse(raw);
+    if(data && Array.isArray(data.custom)) data = data.custom;
+    if(!Array.isArray(data)) throw new Error('O JSON não contém um array de perguntas.');
+    const cleaned = data.filter(q=>q && q.q && Array.isArray(q.options)).map(normalizeImported);
+    if(!cleaned.length) throw new Error('Nenhuma pergunta válida encontrada.');
+    state.customQuestions = state.customQuestions.concat(cleaned);
+    saveState().then(()=>{
+      alert(cleaned.length + ' pergunta(s) importada(s)!');
+      document.getElementById('importArea').value = '';
+      render();
+    });
+  }catch(e){
+    alert('Erro ao importar: ' + e.message);
+  }
+}
+
+function resetAll(){
+  if(!confirm('Isso vai apagar TODO o seu progresso, aulas e perguntas personalizadas. Tem certeza?')) return;
+  if(!confirm('Confirmação final: apagar tudo?')) return;
+  state = defaultState();
+  saveState().then(()=>{
+    pending = [];
+    editor = emptyEditor();
+    render();
+  });
+}
+
+// ============================================================
+//  RENDER — ELEMENTOS
+// ============================================================
+function topbar(){
+  return `
+    <div class="topbar">
+      <div class="brand" onclick="go('dashboard')" style="cursor:pointer;" title="Painel">
+        <div class="brand-badge">☁</div>
+        <div class="brand-text"><b>AWS</b> Cloud Practitioner · CLF-C02</div>
+      </div>
+      <div class="topnav">
+        <button class="nav-btn ${view==='dashboard'?'active':''}" onclick="go('dashboard')">Painel</button>
+        <button class="nav-btn ${view==='generator'?'active':''}" onclick="go('generator')">＋ Nova Aula</button>
+        <button class="nav-btn ${view==='bank'?'active':''}" onclick="go('bank')">Banco</button>
+        <span class="day-pill">DIA ${state.day}</span>
+      </div>
+    </div>`;
+}
+
+function renderGauge(){
+  const score = estimatedScore();
+  const pctWidth = Math.min(100, (score/1000)*100);
+  return `
+    <div class="gauge-card">
+      <div class="gauge-top">
+        <span class="gauge-label">Pontuação estimada</span>
+        <span class="gauge-score">${state.totalAnswered>0? score : '—'} <span style="font-size:12px;color:var(--text-dim);font-weight:400;">/ 1000</span></span>
+      </div>
+      <div class="gauge-track">
+        <div class="gauge-fill" style="width:${pctWidth}%"></div>
+        <div class="gauge-threshold"></div>
+      </div>
+    </div>`;
+}
+
+function renderDashboard(){
+  const weak = Object.entries(state.topicStats).filter(([,v])=>v.t>=2 && pct(v.c,v.t)<70).sort((a,b)=>pct(a[1].c,a[1].t)-pct(b[1].c,b[1].t)).slice(0,3);
+  const strong = Object.entries(state.topicStats).filter(([,v])=>v.t>=2 && pct(v.c,v.t)>=85).sort((a,b)=>pct(b[1].c,b[1].t)-pct(a[1].c,a[1].t)).slice(0,3);
+  const customCount = (state.customQuestions||[]).length;
+
+  const lessonsCard = lessonList.length ? `
+    <div class="card">
+      <p class="h1">📚 Suas aulas</p>
+      <p class="sub">Questões das aulas que você adicionou. Pratique o conteúdo de hoje ou revise aulas anteriores.</p>
+      ${lessonList.map((n,i)=>`
+        <div class="lesson-row">
+          <div><b>${esc(n)}</b> <span class="dim">· ${state.customQuestions.filter(q=>(q.lesson||'Sem aula')===n).length} questões</span></div>
+          <button class="mini-btn" onclick="startLesson(${i})">▶ Praticar</button>
+        </div>`).join('')}
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="go('generator')">＋ Adicionar outra aula</button>
+      </div>
+    </div>` : `
+    <div class="card">
+      <p class="h1">📚 Quer praticar o conteúdo de hoje?</p>
+      <p class="sub">Adicione a aula que você estudou: cole o texto e gere questões automaticamente com IA.</p>
+      <button class="btn btn-ghost" onclick="go('generator')">＋ Adicionar aula de hoje</button>
+    </div>`;
+
+  return `
+    ${renderGauge()}
+    <div class="card">
+      <p class="h1">Dia ${state.day} — pronto para treinar?</p>
+      <p class="sub">10 questões cobrindo os 4 domínios do exame CLF-C02, com peso proporcional: Conceitos (24%), Segurança (30%), Tecnologia (34%) e Cobrança/Suporte (12%). ${state.daysCompleted>0 ? 'As questões de hoje priorizam seus temas mais fracos.' : ''}</p>
+
+      ${state.totalAnswered>0 ? `
+      <div class="domain-grid">
+        ${Object.entries(DOMAINS).map(([key,d])=>{
+          const s = state.domainStats[key];
+          const p = pct(s.c,s.t);
+          return `<div class="domain-box">
+            <div class="dn"><span class="dot" style="background:${d.color}"></span>${d.name}</div>
+            <div class="dv">${s.t>0?p+'%':'—'}</div>
+            <div class="bar-bg"><div class="bar-fill" style="width:${p}%;background:${d.color}"></div></div>
+          </div>`;
+        }).join('')}
+      </div>
+
+      ${(weak.length || strong.length) ? `<div class="tags-row">
+        ${weak.map(([t,v])=>`<span class="tag-topic weak">🔴 ${esc(t)} — ${pct(v.c,v.t)}%</span>`).join('')}
+        ${strong.map(([t,v])=>`<span class="tag-topic strong">🟢 ${esc(t)} — ${pct(v.c,v.t)}%</span>`).join('')}
+      </div>` : ''}
+      ` : `<p class="sub" style="margin-top:-8px;">Você ainda não treinou nenhuma questão. Vamos começar!</p>`}
+
+      <button class="btn btn-primary" onclick="startDay()">Iniciar Dia ${state.day} — 10 questões</button>
+    </div>
+
+    ${lessonsCard}
+
+    <div class="footer-note">${state.daysCompleted} dia(s) concluído(s) · ${state.totalAnswered} questões respondidas · ${customCount} pergunta(s) de aulas</div>
+  `;
+}
+
+function renderQuestion(){
+  const q = session.questions[session.idx];
+  const sel = session.currentSelection || [];
+  const answered = session.answered;
+  const lastAnswer = answered ? session.answers[session.answers.length-1] : null;
+
+  const progLabel = session.mode==='lesson'
+    ? `AULA: ${esc(session.lesson)} · QUESTÃO ${session.idx+1}/${session.questions.length}`
+    : `DIA ${state.day} · QUESTÃO ${session.idx+1}/${session.questions.length}`;
+
+  let optionsHtml = q.options.map(opt=>{
+    let cls = 'option';
+    if(!answered && sel.includes(opt.k)) cls += ' selected';
+    if(answered){
+      cls += ' disabled';
+      if(q.correct.includes(opt.k)) cls += ' correct';
+      else if(sel.includes(opt.k)) cls += ' incorrect';
+    }
+    return `<div class="${cls}" onclick="${answered?'':`selectOption('${opt.k}')`}">
+      <div class="option-key">${opt.k}</div>
+      <div class="option-text">${esc(opt.t)}</div>
+    </div>`;
+  }).join('');
+
+  let feedbackHtml = '';
+  if(answered){
+    const source = q.source && q.source.label
+      ? (q.source.url
+          ? `<a class="source-link" href="${esc(q.source.url)}" target="_blank" rel="noopener">📚 ${esc(q.source.label)} ↗</a>`
+          : `<span class="source-link" style="cursor:default;">📚 ${esc(q.source.label)}</span>`)
+      : '';
+    feedbackHtml = `
+      <div class="result-banner ${lastAnswer.correct?'ok':'no'}">
+        ${lastAnswer.correct ? '✅ Você acertou!' : '❌ Você errou.'}
+        <span style="font-weight:400;color:var(--text-dim);font-size:12px;">Resposta correta: ${q.correct.join(', ')}</span>
+      </div>
+      <div class="exp-block">
+        ${q.options.map(opt=>`
+          <div class="exp-opt ${q.correct.includes(opt.k)?'is-correct':''}">
+            <b>${opt.k}${q.correct.includes(opt.k)?' ✓':''}:</b> ${esc((q.exp&&q.exp[opt.k])||'')}
+          </div>
+        `).join('')}
+      </div>
+      <div class="concept-box">
+        <div class="lbl">🧠 Conceito para guardar</div>
+        <p>${esc(q.concept||'')}</p>
+        ${source}
+      </div>
+      <button class="btn btn-primary" onclick="nextQuestion()">${session.idx+1>=session.questions.length?'Ver resumo':'Próxima questão'}</button>
+    `;
+  } else {
+    feedbackHtml = `<button class="btn btn-primary" onclick="submitAnswer()" ${sel.length===0?'disabled style="opacity:0.5;cursor:not-allowed;"':''}>Confirmar resposta</button>`;
+  }
+
+  return `
+    <div class="card">
+      <div class="q-meta">
+        <span class="q-progress">${progLabel}</span>
+        <div class="q-tags">
+          <span class="badge" style="border-color:${domainColor(q.domain)};color:${domainColor(q.domain)}">${DOMAINS[q.domain] ? DOMAINS[q.domain].name : esc(q.domain)}</span>
+          <span class="badge ${diffClass(q.difficulty)}">${diffLabel(q.difficulty)}</span>
+        </div>
+      </div>
+      <p class="q-text">${esc(q.q)}</p>
+      ${q.type==='multiple' && !answered ? `<p class="q-hint">Selecione todas as alternativas corretas.</p>` : ''}
+      ${optionsHtml}
+      <div style="margin-top:16px;">${feedbackHtml}</div>
+    </div>
+  `;
+}
+
+function renderSummary(){
+  const isLesson = session.mode==='lesson';
+  const title = isLesson ? `📊 Resumo — Aula: ${esc(session.lesson)}` : `📊 Resumo — Dia ${state.day}`;
+  const totalC = session.answers.filter(a=>a.correct).length;
+  const totalT = session.answers.length;
+
+  const rows = Object.entries(DOMAINS).map(([key,d])=>{
+    const s = session.dayDomainStats[key] || {c:0,t:0};
+    return `<tr><td><span class="dot" style="background:${d.color};display:inline-block;margin-right:6px;"></span>${d.name}</td><td class="num">${s.c}/${s.t}</td><td class="num">${pct(s.c,s.t)}%</td></tr>`;
+  }).join('');
+
+  const dayTopics = Object.entries(session.dayTopicStats || {});
+  const wrong = dayTopics.filter(([,v])=>v.c<v.t).sort((a,b)=>(b.t-b.c)-(a.t-a.c)).slice(0,3);
+  const right = dayTopics.filter(([,v])=>v.c===v.t && v.t>0).slice(0,3);
+
+  const actions = isLesson ? `
+    <button class="btn btn-primary" onclick="retryLesson()">🔁 Praticar novamente</button>
+    <div style="height:10px;"></div>
+    <button class="btn btn-ghost" onclick="backToDashboard()">Voltar ao painel</button>` : `
+    <button class="btn btn-primary" onclick="goNextDay()">Continuar para o Dia ${state.day+1}</button>
+    <div style="height:10px;"></div>
+    <button class="btn btn-ghost" onclick="backToDashboard()">Voltar ao painel</button>`;
+
+  return `
+    <div class="card">
+      <p class="h1">${title}</p>
+      <p class="sub">Você concluiu ${totalT}/${totalT} questões. Aproveitamento geral: <b style="color:var(--text)">${pct(totalC,totalT)}%</b> (${totalC}/${totalT})</p>
+      <table>
+        <thead><tr><th>Domínio</th><th style="text-align:right;">Acertos</th><th style="text-align:right;">%</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+
+      ${wrong.length ? `<div class="tags-row">${wrong.map(([t,v])=>`<span class="tag-topic weak">🔴 ${esc(t)} — ${v.c}/${v.t}</span>`).join('')}</div>` : ''}
+      ${right.length ? `<div class="tags-row" style="margin-top:-6px;">${right.map(([t])=>`<span class="tag-topic strong">🟢 ${esc(t)} — dominado</span>`).join('')}</div>` : ''}
+
+      <p class="sub" style="margin-top:14px;">${isLesson ? 'Você já fixou essas questões no seu banco. Continue treinando para reforçar.' : 'Amanhã o treino vai priorizar automaticamente os temas onde você mais errou.'}</p>
+      ${actions}
+    </div>
+  `;
+}
+
+// ---------- TELA: GERADOR DE AULA ----------
+function renderPendingList(){
+  if(!pending.length){
+    return `<div class="card"><p class="sub" style="margin:0;">Nenhuma questão ainda. Gere com IA ou adicione manualmente.</p></div>`;
+  }
+  return `
+    <div class="card">
+      <p class="h1">Questões da aula (${pending.length})</p>
+      ${pending.map((q,i)=>`
+        <div class="p-question">
+          <div class="p-q-top">
+            <span class="badge ${diffClass(q.difficulty)}">${diffLabel(q.difficulty)}</span>
+            <span class="badge" style="color:var(--text-dim);">${q.type==='multiple'?'Seleção múltipla':'Uma correta'}</span>
+            <div></div>
+            <button class="mini-btn" onclick="editPending(${i})">✏️ Editar</button>
+            <button class="mini-btn danger" onclick="deletePending(${i})">🗑 Excluir</button>
+          </div>
+          <p class="p-q">${esc(q.q)}</p>
+          ${q.options.map(o=>`
+            <div class="p-opt ${q.correct.includes(o.k)?'ok':''}"><b>${o.k}</b>${esc(o.t)}</div>`).join('')}
+          <div class="p-concept">🧠 ${esc(q.concept||'')}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function renderQuestionEditor(){
+  const letters = ['A','B','C','D'];
+  const isEdit = editor.customId!==null || editor.idx>=0;
+  return `
+    <div class="card" style="border-color:var(--orange-dim);">
+      <p class="h1">${isEdit ? '✏️ Editar pergunta' : '＋ Nova pergunta'}</p>
+      <label class="f-label">Pergunta</label>
+      <textarea class="f-input f-area" id="eQ" rows="3" oninput="editor.q=this.value">${esc(editor.q)}</textarea>
+      <div class="f-grid">
+        <div>
+          <label class="f-label">Tipo</label>
+          <select class="f-input" onchange="editor.type=this.value; if(editor.type==='single'&&editor.correct.length>1) editor.correct=[editor.correct[0]]; render();">
+            <option value="single" ${editor.type==='single'?'selected':''}>Uma correta (single)</option>
+            <option value="multiple" ${editor.type==='multiple'?'selected':''}>Múltiplas (multiple)</option>
+          </select>
+        </div>
+        <div>
+          <label class="f-label">Dificuldade</label>
+          <select class="f-input" onchange="editor.difficulty=this.value; render();">
+            ${['easy','medium','hard'].map(d=>`<option value="${d}" ${editor.difficulty===d?'selected':''}>${diffLabel(d)}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      ${editor.type==='multiple' ? `<p class="q-hint" style="margin-top:8px;">Adicione "(selecione 2)" no final da pergunta.</p>` : ''}
+      <label class="f-label">Tema (topic)</label>
+      <input class="f-input" id="eTopic" value="${esc(editor.topic)}" oninput="editor.topic=this.value" placeholder="${esc(genForm.name || 'Tema da aula')}">
+      <p class="f-label">Opções — marque a(s) correta(s)</p>
+      ${letters.map((l,i)=>`
+        <div class="opt-row">
+          <label class="chk ${editor.correct.includes(l)?'on':''}"><input type="checkbox" ${editor.correct.includes(l)?'checked':''} onchange="editorToggle('${l}')"><span>${l}</span></label>
+          <div class="opt-fields">
+            <input class="f-input" value="${esc(editor.options[i])}" oninput="editor.options[${i}]=this.value" placeholder="Texto da opção ${l}">
+            <input class="f-input f-small" value="${esc(editor.exp[i])}" oninput="editor.exp[${i}]=this.value" placeholder="Explicação da opção ${l}">
+          </div>
+        </div>`).join('')}
+      <label class="f-label">Conceito para guardar</label>
+      <textarea class="f-input f-area" id="eConcept" rows="2" oninput="editor.concept=this.value">${esc(editor.concept)}</textarea>
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="btn btn-primary" onclick="saveEditor()">Salvar pergunta</button>
+        <button class="btn btn-ghost" onclick="cancelEditor()">Cancelar</button>
+      </div>
+    </div>`;
+}
+
+function renderGenerator(){
+  return `
+    <div class="card">
+      <p class="h1">📘 Nova Aula</p>
+      <p class="sub">Colou o conteúdo que estudou hoje? Cole aqui e gere questões para praticar. Você também pode adicionar perguntas manualmente.</p>
+
+      <label class="f-label">Nome da aula</label>
+      <input class="f-input" id="lessonName" value="${esc(genForm.name)}" oninput="onGenInput()" placeholder="Ex: S3 — Classes de armazenamento">
+
+      <div class="f-grid">
+        <div>
+          <label class="f-label">Domínio da prova</label>
+          <select class="f-input" id="lessonDomain" onchange="onGenInput()">
+            ${Object.entries(DOMAINS).map(([k,d])=>`<option value="${k}" ${genForm.domain===k?'selected':''}>${d.name}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <label class="f-label">Quantidade de questões</label>
+          <input class="f-input" type="number" id="lessonCount" min="1" max="10" value="${genForm.count}" oninput="onGenInput()">
+        </div>
+      </div>
+
+      <label class="f-label">Texto da aula</label>
+      <textarea class="f-input f-area" id="lessonText" rows="8" oninput="onGenInput()" placeholder="Cole aqui o texto/conteúdo que você estudou...">${esc(genForm.text)}</textarea>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="generateFromAI()">✨ Gerar questões com IA</button>
+        <button class="btn btn-ghost" onclick="addManual()">＋ Manual</button>
+      </div>
+      ${genStatusMsg}
+    </div>
+
+    ${editor.idx !== null ? renderQuestionEditor() : ''}
+
+    ${renderPendingList()}
+
+    ${pending.length ? `
+    <div class="card">
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="saveLesson()">💾 Salvar aula — ${pending.length} questão(ões)</button>
+        <button class="btn btn-ghost" onclick="clearPending()">Limpar tudo</button>
+      </div>
+    </div>` : ''}
+  `;
+}
+
+// ---------- TELA: BANCO ----------
+function renderBank(){
+  const lessons = {};
+  (state.customQuestions||[]).forEach(q=>{
+    const n = q.lesson || 'Sem aula';
+    lessons[n] = (lessons[n]||0)+1;
+  });
+  const lessonEntries = Object.entries(lessons);
+
+  return `
+    <div class="card">
+      <p class="h1">⚙️ Banco de Perguntas</p>
+      <p class="sub">${state.customQuestions.length} pergunta(s) personalizada(s) · ${BANK.length} oficiais. Gerencie suas aulas, edite perguntas e faça backup.</p>
+    </div>
+
+    <div class="card">
+      <p class="h1">🤖 Configurações da IA</p>
+      <p class="sub">Usado para gerar questões das suas aulas. A chave é gratuita e fica salva apenas no seu navegador.</p>
+      <label class="f-label">Chave de API do Google Gemini (gratuita)</label>
+      <input class="f-input" id="aiKey" type="password" value="${esc(state.apiKey)}" oninput="state.apiKey=this.value" placeholder="Cole sua chave (AIza...)">
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="saveKey()">Salvar configurações</button>
+        <a class="btn btn-ghost" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Obter chave gratuita ↗</a>
+      </div>
+      <label class="f-label">Modelo (avançado)</label>
+      <input class="f-input" id="aiModel" value="${esc(state.aiModel)}" oninput="state.aiModel=this.value" placeholder="gemini-2.5-flash">
+    </div>
+
+    ${editor.customId !== null ? renderQuestionEditor() : ''}
+
+    <div class="card">
+      <p class="h1">📚 Aulas adicionadas</p>
+      ${lessonEntries.length===0 ? `<p class="sub" style="margin:0;">Nenhuma aula ainda. Vá em <b>＋ Nova Aula</b> para adicionar o conteúdo do dia.</p>` :
+        lessonEntries.map(([name,count],i)=>`
+          <div class="lesson-row">
+            <div><b>${esc(name)}</b> <span class="dim">· ${count} questão(ões)</span></div>
+            <div style="display:flex;gap:6px;">
+              <button class="mini-btn" onclick="startLesson(${i})">▶ Praticar</button>
+              <button class="mini-btn danger" onclick="deleteLesson(${i})">Excluir</button>
+            </div>
+          </div>`).join('')}
+    </div>
+
+    <div class="card">
+      <p class="h1">🗂 Todas as perguntas personalizadas</p>
+      ${state.customQuestions.length===0 ? `<p class="sub" style="margin:0;">Nenhuma pergunta personalizada.</p>` :
+        state.customQuestions.map((q)=>`
+          <div class="p-question">
+            <div class="p-q-top">
+              <span class="badge">${esc(q.lesson||'Aula')}</span>
+              <span class="badge ${diffClass(q.difficulty)}">${diffLabel(q.difficulty)}</span>
+              <div></div>
+              <button class="mini-btn" onclick="editCustom(${q.id})">✏️</button>
+              <button class="mini-btn danger" onclick="deleteCustom(${q.id})">🗑</button>
+            </div>
+            <p class="p-q">${esc(q.q)}</p>
+          </div>`).join('')}
+    </div>
+
+    <div class="card">
+      <p class="h1">💾 Backup (JSON)</p>
+      <p class="sub">Exporte seu banco de aulas para fazer backup, ou importe um backup/anterior.</p>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="exportJSON()">⬇ Exportar backup</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('exportBox').style.display='none'">Fechar</button>
+      </div>
+      <div id="exportBox" style="display:none;margin-top:10px;">
+        <textarea class="f-input f-area" id="exportArea" rows="8" readonly></textarea>
+        <p class="dim" id="copyMsg"></p>
+      </div>
+      <label class="f-label">Importar JSON</label>
+      <textarea class="f-input f-area" id="importArea" rows="5" placeholder='Cole aqui um backup exportado ou um array de perguntas.'></textarea>
+      <button class="btn btn-primary" style="margin-top:10px;" onclick="importJSON()">⬆ Importar perguntas</button>
+    </div>
+
+    <div class="card">
+      <button class="btn btn-ghost" style="color:var(--incorrect);border-color:var(--incorrect);" onclick="resetAll()">Resetar tudo (progresso, aulas e perguntas)</button>
+    </div>
+  `;
+}
+
+// ============================================================
+//  RENDER — PRINCIPAL
+// ============================================================
+function render(){
+  const app = document.getElementById('app');
+  if(!state || !app) return;
+
+  lessonList = [];
+  (state.customQuestions||[]).forEach(q=>{
+    const n = q.lesson || 'Sem aula';
+    if(!lessonList.includes(n)) lessonList.push(n);
+  });
+
+  let html = topbar();
+
+  if(session && !session.finished){
+    html += renderQuestion();
+  } else if(session && session.finished){
+    html += renderSummary();
+  } else if(view === 'generator'){
+    html += renderGenerator();
+  } else if(view === 'bank'){
+    html += renderBank();
+  } else {
+    html += renderDashboard();
+  }
+
+  app.innerHTML = html;
+}
+
+loadState();
+</script>
+</body>
+</html>
